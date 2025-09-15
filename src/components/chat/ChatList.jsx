@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { account, getUserChats, getLastMessage, getUserById } from '../../lib/appwrite';
+import { account, getUserChats, getLastMessage, getUserById, getAvatarUrl, clearUserCache } from '../../lib/appwrite';
 import UserSearch from './UserSearch';
 
 const ChatList = ({ onSelectUser, onSelectChat, activeChat, refreshTrigger, onDeleteChat }) => {
@@ -14,9 +14,11 @@ const ChatList = ({ onSelectUser, onSelectChat, activeChat, refreshTrigger, onDe
       try {
         const user = await account.get();
         setCurrentUser(user);
-        await loadChats(user.$id);
-      } catch (err) {
-        console.error('Failed to get current user:', err);
+        // Clear cache and load chats when component mounts
+        clearUserCache();
+        loadChats(user.$id);
+      } catch (error) {
+        console.error('Failed to get account:', error);
       }
     };
     getAccount();
@@ -25,6 +27,8 @@ const ChatList = ({ onSelectUser, onSelectChat, activeChat, refreshTrigger, onDe
   // Обновляем чаты когда приходит сигнал обновления
   useEffect(() => {
     if (currentUser && refreshTrigger > 0) {
+      // Clear user cache to ensure fresh data
+      clearUserCache();
       loadChats(currentUser.$id);
     }
   }, [refreshTrigger, currentUser]);
@@ -40,6 +44,7 @@ const ChatList = ({ onSelectUser, onSelectChat, activeChat, refreshTrigger, onDe
         const otherUserId = chat.participants.find(id => id !== userId);
         if (otherUserId) {
           const otherUser = await getUserById(otherUserId);
+          console.log('Loaded user for chat:', otherUser); // Debug log
           setChatUsers(prev => ({
             ...prev,
             [chat.$id]: otherUser
@@ -123,7 +128,25 @@ const ChatList = ({ onSelectUser, onSelectChat, activeChat, refreshTrigger, onDe
                 onClick={() => onSelectChat(chat)}
                 className="flex items-center space-x-3 cursor-pointer"
               >
-                <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-on-secondary font-semibold">
+                {/* User avatar */}
+                {otherUser && otherUser.avatarId ? (
+                  <img
+                    src={getAvatarUrl(otherUser.avatarId)}
+                    alt={otherUser.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                    onLoad={() => console.log('Avatar loaded:', otherUser.name, otherUser.avatarId)}
+                    onError={(e) => {
+                      console.log('Avatar failed to load:', otherUser.avatarId, e);
+                      // Fallback to initial if image fails to load
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div
+                  className={`w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-on-secondary font-semibold ${otherUser && otherUser.avatarId ? 'hidden' : ''
+                    }`}
+                >
                   {otherUser ? otherUser.name.charAt(0).toUpperCase() : '?'}
                 </div>
                 <div className="flex-1 min-w-0">

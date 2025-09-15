@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { client, databases, account, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_MESSAGES, getUserById } from '../../lib/appwrite';
+import { client, databases, account, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_MESSAGES, getUserById, getAvatarUrl } from '../../lib/appwrite';
 import { Query } from 'appwrite';
 
 const ChatView = ({ chatId }) => {
@@ -130,8 +130,31 @@ const ChatView = ({ chatId }) => {
             return (
               <div
                 key={message.$id}
-                className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${isOwn ? 'justify-end' : 'justify-start'} mb-4`}
               >
+                {!isOwn && (
+                  <div className="flex-shrink-0 mr-2">
+                    {sender && sender.avatarId ? (
+                      <img
+                        src={getAvatarUrl(sender.avatarId)}
+                        alt={sender.name}
+                        className="w-8 h-8 rounded-full object-cover"
+                        onError={(e) => {
+                          // Fallback to initial if image fails to load
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-on-secondary text-xs font-semibold ${sender && sender.avatarId ? 'hidden' : ''
+                        }`}
+                    >
+                      {sender ? sender.name.charAt(0).toUpperCase() : '?'}
+                    </div>
+                  </div>
+                )}
+
                 <div
                   className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isOwn
                     ? 'bg-primary text-on-primary'

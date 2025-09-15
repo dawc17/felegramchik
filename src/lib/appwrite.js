@@ -1,5 +1,5 @@
-import { Client, Account, Databases } from "appwrite";
-import { Query } from "appwrite";
+import { Client, Account, Databases, Storage } from "appwrite";
+import { Query, ID } from "appwrite";
 
 // Проверяем наличие всех необходимых переменных окружения
 const ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT;
@@ -17,6 +17,7 @@ export const APPWRITE_DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 export const APPWRITE_COLLECTION_ID_MESSAGES = import.meta.env.VITE_APPWRITE_COLLECTION_ID_MESSAGES;
 export const APPWRITE_COLLECTION_ID_USERS = import.meta.env.VITE_APPWRITE_COLLECTION_ID_USERS;
 export const APPWRITE_COLLECTION_ID_CHATS = import.meta.env.VITE_APPWRITE_COLLECTION_ID_CHATS;
+export const APPWRITE_BUCKET_ID_AVATARS = import.meta.env.VITE_APPWRITE_BUCKET_ID_AVATARS;
 
 const client = new Client()
     .setEndpoint(ENDPOINT)
@@ -24,6 +25,7 @@ const client = new Client()
 
 const account = new Account(client);
 const databases = new Databases(client);
+const storage = new Storage(client);
 
 // Get user's chats
 export const getUserChats = async (userId) => {
@@ -58,6 +60,11 @@ export const getLastMessage = async (chatId) => {
 // Cache for user data
 const userCache = new Map();
 
+// Clear user cache (useful when user profile is updated)
+export const clearUserCache = () => {
+    userCache.clear();
+};
+
 // Get user info by ID
 export const getUserById = async (userId) => {
     // Check cache first
@@ -88,21 +95,15 @@ export const getUserById = async (userId) => {
 // Delete chat and all its messages
 export const deleteChat = async (chatId) => {
     try {
-        console.log('Deleting chat with ID:', chatId);
-
         // First, delete all messages in the chat
-        console.log('Fetching messages for chat...');
         const messagesResponse = await databases.listDocuments(
             APPWRITE_DATABASE_ID,
             APPWRITE_COLLECTION_ID_MESSAGES,
             [Query.equal('chatId', [chatId])]
         );
 
-        console.log(`Found ${messagesResponse.documents.length} messages to delete`);
-
         // Delete all messages
         for (const message of messagesResponse.documents) {
-            console.log('Deleting message:', message.$id);
             await databases.deleteDocument(
                 APPWRITE_DATABASE_ID,
                 APPWRITE_COLLECTION_ID_MESSAGES,
@@ -111,19 +112,63 @@ export const deleteChat = async (chatId) => {
         }
 
         // Then delete the chat itself
-        console.log('Deleting chat document...');
         await databases.deleteDocument(
             APPWRITE_DATABASE_ID,
             APPWRITE_COLLECTION_ID_CHATS,
             chatId
         );
 
-        console.log('Chat deleted successfully');
         return true;
     } catch (error) {
         console.error('Failed to delete chat:', error);
         throw error;
     }
+};// Avatar/Profile functions
+export const uploadAvatar = async (file) => {
+    try {
+        const result = await storage.createFile(
+            APPWRITE_BUCKET_ID_AVATARS,
+            ID.unique(),
+            file
+        );
+        return result;
+    } catch (error) {
+        console.error('Failed to upload avatar:', error);
+        throw error;
+    }
 };
 
-export { client, account, databases };
+export const getAvatarUrl = (fileId) => {
+    if (!fileId) return null;
+    return storage.getFileView(APPWRITE_BUCKET_ID_AVATARS, fileId);
+};
+
+export const deleteAvatar = async (fileId) => {
+    try {
+        await storage.deleteFile(APPWRITE_BUCKET_ID_AVATARS, fileId);
+        return true;
+    } catch (error) {
+        console.error('Failed to delete avatar:', error);
+        throw error;
+    }
+};
+
+export const updateUserProfile = async (userId, data) => {
+    try {
+        const result = await databases.updateDocument(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_ID_USERS,
+            userId,
+            data
+        );
+
+        // Clear entire user cache when profile is updated so all components refresh
+        clearUserCache();
+        return result;
+    } catch (error) {
+        console.error('Failed to update user profile:', error);
+        throw error;
+    }
+};
+
+export { client, account, databases, storage };

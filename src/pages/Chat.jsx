@@ -99,8 +99,6 @@ const Chat = () => {
   const handleDeleteChat = async (chatId) => {
     if (!chatId) return;
 
-    console.log('handleDeleteChat called with chatId:', chatId);
-
     // Show confirmation dialog
     const confirmed = window.confirm('Are you sure you want to delete this chat? This action cannot be undone.');
 
@@ -126,12 +124,23 @@ const Chat = () => {
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between p-4 bg-secondary text-on-secondary">
         <h1 className="text-xl font-bold">Felegramchik</h1>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 text-sm font-medium bg-primary text-on-primary border border-transparent rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-        >
-          Logout
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => navigate('/profile')}
+            className="p-2 hover:bg-secondary-variant rounded-full transition-colors"
+            title="Profile"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+            </svg>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 text-sm font-medium bg-primary text-on-primary border border-transparent rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          >
+            Logout
+          </button>
+        </div>
       </header>
       <main className="flex flex-1">
         <ChatList
