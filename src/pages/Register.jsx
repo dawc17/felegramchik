@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { account } from '../lib/appwrite';
+import { account, databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_USERS } from '../lib/appwrite';
 import { ID } from 'appwrite';
 
 const Register = () => {
@@ -8,29 +8,54 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const user = await account.create(ID.unique(), email, password, name);
+      await databases.createDocument(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_COLLECTION_ID_USERS,
+        user.$id,
+        {
+          userId: user.$id,
+          name: name,
+        }
+      );
       await account.createEmailPasswordSession(email, password);
       navigate('/chat');
-    } catch (error) {
-      console.error('Failed to register:', error);
+    } catch (err) {
+      setError(err.message);
+      console.error('Failed to register:', err);
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen bg-background">
+      {error && (
+        <div className="absolute top-0 right-0 mt-4 mr-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-md">
+          {error}
+        </div>
+      )}
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">
+        <h2 className="text-2xl font-bold text-center text-secondary">
           Create an account
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label
               htmlFor="name"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-secondary"
             >
               Name
             </label>
@@ -39,7 +64,7 @@ const Register = () => {
               name="name"
               type="text"
               required
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full px-3 py-2 mt-1 border border-secondary rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
               placeholder="Your Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -48,7 +73,7 @@ const Register = () => {
           <div>
             <label
               htmlFor="email"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-secondary"
             >
               Email address
             </label>
@@ -58,7 +83,7 @@ const Register = () => {
               type="email"
               autoComplete="email"
               required
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full px-3 py-2 mt-1 border border-secondary rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -67,7 +92,7 @@ const Register = () => {
           <div>
             <label
               htmlFor="password"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-secondary"
             >
               Password
             </label>
@@ -77,7 +102,7 @@ const Register = () => {
               type="password"
               autoComplete="current-password"
               required
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full px-3 py-2 mt-1 border border-secondary rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -86,7 +111,7 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 text-sm font-medium text-black bg-primary border border-transparent rounded-md shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Register
             </button>
@@ -96,7 +121,7 @@ const Register = () => {
           Already have an account?{' '}
           <Link
             to="/login"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
+            className="font-medium text-primary hover:text-accent"
           >
             Sign in
           </Link>
