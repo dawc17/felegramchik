@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { account, databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_CHATS } from '../lib/appwrite';
+import { account, databases, deleteChat, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_CHATS } from '../lib/appwrite';
 import ChatList from '../components/chat/ChatList';
 import ChatView from '../components/chat/ChatView';
 import MessageInput from '../components/chat/MessageInput';
@@ -10,15 +10,24 @@ const Chat = () => {
   const navigate = useNavigate();
   const [activeChat, setActiveChat] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [refreshChatList, setRefreshChatList] = useState(0);
+
+  // Debug activeChat changes
+  useEffect(() => {
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Chat.jsx: activeChat changed to:', activeChat);
+    }
+  }, [activeChat]);
 
   useEffect(() => {
     const getAccount = async () => {
-        try {
-            const user = await account.get();
-            setCurrentUser(user);
-        } catch (err) {
-            console.error(err);
-        }
+      try {
+        const user = await account.get();
+        setCurrentUser(user);
+      } catch (err) {
+        console.error(err);
+      }
     }
     getAccount();
   }, []);
@@ -44,15 +53,21 @@ const Chat = () => {
     const participants = [currentUser.$id, user.$id].sort();
 
     try {
-      // Check if a chat already exists
+      // Get all chats and find exact participants match
       const response = await databases.listDocuments(
         APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_ID_CHATS,
-        [Query.equal('participants', participants)]
+        APPWRITE_COLLECTION_ID_CHATS
       );
 
-      if (response.documents.length > 0) {
-        setActiveChat(response.documents[0]);
+      // Find chat with exact participants match
+      const existingChat = response.documents.find(chat => {
+        const chatParticipants = chat.participants.sort();
+        const targetParticipants = participants.sort();
+        return JSON.stringify(chatParticipants) === JSON.stringify(targetParticipants);
+      });
+
+      if (existingChat) {
+        setActiveChat(existingChat);
       } else {
         // Create a new chat
         const newChat = await databases.createDocument(
@@ -63,30 +78,69 @@ const Chat = () => {
             participants: participants,
           },
           [
-            Permission.read(Role.user(participants[0])),
-            Permission.read(Role.user(participants[1])),
+            Permission.read(Role.users()),
+            Permission.write(Role.users()),
           ]
         );
         setActiveChat(newChat);
       }
+
+      // Обновить список чатов
+      setRefreshChatList(prev => prev + 1);
     } catch (error) {
       console.error('Failed to select or create chat:', error);
     }
   };
 
+  const handleSelectChat = (chat) => {
+    setActiveChat(chat);
+  };
+
+  const handleDeleteChat = async (chatId) => {
+    if (!chatId) return;
+
+    console.log('handleDeleteChat called with chatId:', chatId);
+
+    // Show confirmation dialog
+    const confirmed = window.confirm('Are you sure you want to delete this chat? This action cannot be undone.');
+
+    if (!confirmed) return;
+
+    try {
+      await deleteChat(chatId);
+
+      // If the deleted chat was active, clear active chat
+      if (activeChat && activeChat.$id === chatId) {
+        setActiveChat(null);
+      }
+
+      // Refresh chat list
+      setRefreshChatList(prev => prev + 1);
+    } catch (error) {
+      console.error('Failed to delete chat:', error);
+      alert('Failed to delete chat. Please try again.');
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
-      <header className="flex items-center justify-between p-4 bg-secondary text-white">
-        <h1 className="text-xl font-bold">Chat</h1>
+      <header className="flex items-center justify-between p-4 bg-secondary text-on-secondary">
+        <h1 className="text-xl font-bold">Felegramchik</h1>
         <button
           onClick={handleLogout}
-          className="px-4 py-2 text-sm font-medium text-black bg-accent border border-transparent rounded-md shadow-sm hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          className="px-4 py-2 text-sm font-medium bg-primary text-on-primary border border-transparent rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           Logout
         </button>
       </header>
       <main className="flex flex-1">
-        <ChatList onSelectUser={handleSelectUser} />
+        <ChatList
+          onSelectUser={handleSelectUser}
+          onSelectChat={handleSelectChat}
+          onDeleteChat={handleDeleteChat}
+          activeChat={activeChat}
+          refreshTrigger={refreshChatList}
+        />
         <div className="flex flex-col flex-1">
           {activeChat ? (
             <>
@@ -94,8 +148,16 @@ const Chat = () => {
               <MessageInput chatId={activeChat.$id} participants={activeChat.participants} />
             </>
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500">Select a user to start chatting.</p>
+            <div className="flex items-center justify-center h-full bg-surface">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" className="text-primary">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                  </svg>
+                </div>
+                <p className="text-on-surface/60 text-lg">Select a chat to start messaging</p>
+                <p className="text-on-surface/40 text-sm mt-2">Click + in chat list to find a user</p>
+              </div>
             </div>
           )}
         </div>
