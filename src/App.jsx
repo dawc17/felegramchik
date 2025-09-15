@@ -1,10 +1,18 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import "./App.css";
-import { client } from "./lib/appwrite";
-import { AppwriteException } from "appwrite";
+import { Routes, Route } from 'react-router-dom';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import Chat from './pages/Chat';
+import './App.css';
 
 function App() {
-  return <div className="bg-amber-400">Hello World</div>;
+  return (
+    <Routes>
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/chat" element={<Chat />} />
+      <Route path="/" element={<Register />} />
+    </Routes>
+  );
 }
 
 export default App;
