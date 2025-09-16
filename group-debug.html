@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Group Chat Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .group-info {
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .message-preview {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+
+        .sender-name {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .message-text {
+            margin-left: 5px;
+        }
+
+        .timestamp {
+            float: right;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .unread-count {
+            background: #28a745;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🐛 Отладка групповых чатов</h1>
+
+    <h2>🔧 Что было исправлено:</h2>
+    <div class="group-info">
+        <h3>1. Добавлено состояние lastMessageSenders</h3>
+        <p>Теперь ChatList.jsx отслеживает отправителей последних сообщений в группах</p>
+    </div>
+
+    <div class="group-info">
+        <h3>2. Обновлена функция loadGroups</h3>
+        <p>Загружает информацию об отправителе последнего сообщения через getUserById()</p>
+    </div>
+
+    <div class="group-info">
+        <h3>3. Улучшено отображение групп</h3>
+        <p>Показывает имя отправителя, двоеточие и текст сообщения</p>
+    </div>
+
+    <div class="group-info">
+        <h3>4. Добавлена обработка собственных сообщений</h3>
+        <p>Если последнее сообщение от текущего пользователя, показывает "Вы:"</p>
+    </div>
+
+    <h2>📱 Как должно отображаться:</h2>
+
+    <div class="group-info">
+        <h3>Felegram first group</h3>
+        <div class="message-preview">
+            <span class="sender-name">Иван:</span>
+            <span class="message-text">Привет всем!</span>
+            <span class="timestamp">10:51 PM</span>
+            <span class="unread-count">3</span>
+        </div>
+    </div>
+
+    <div class="group-info">
+        <h3>Felegram first group</h3>
+        <div class="message-preview">
+            <span class="sender-name">Вы:</span>
+            <span class="message-text">Как дела?</span>
+            <span class="timestamp">Yesterday</span>
+        </div>
+    </div>
+
+    <div class="group-info">
+        <h3>Felegram first group</h3>
+        <div class="message-preview">
+            <span class="sender-name">Мария:</span>
+            <span class="message-text">📎 Attachment</span>
+            <span class="timestamp">Sep 15</span>
+            <span class="unread-count">1</span>
+        </div>
+    </div>
+
+    <h2>🧪 Тестирование:</h2>
+    <ol>
+        <li>Откройте группу с двух разных аккаунтов</li>
+        <li>Отправьте сообщение от первого пользователя</li>
+        <li>Проверьте что в списке группы у второго пользователя показывается:
+            <ul>
+                <li>✅ Имя отправителя</li>
+                <li>✅ Текст сообщения</li>
+                <li>✅ Время отправки</li>
+                <li>✅ Кружочек с количеством непрочитанных</li>
+            </ul>
+        </li>
+        <li>Откройте группу - кружочек должен исчезнуть</li>
+        <li>Отправьте сообщение от второго пользователя</li>
+        <li>У первого пользователя должно появиться уведомление</li>
+    </ol>
+
+    <h2>🔍 Отладка:</h2>
+    <p>Если проблемы остаются, проверьте в консоли браузера:</p>
+    <ul>
+        <li><code>Failed to get sender info</code> - проблема с получением данных пользователя</li>
+        <li><code>Failed to get unread count</code> - проблема с подсчетом непрочитанных</li>
+        <li><code>Failed to update unread count</code> - проблема с обновлением счетчиков</li>
+    </ul>
+</body>
+
+</html>

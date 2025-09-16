@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { account } from "../lib/appwrite";
+import { account, getUserById } from "../lib/appwrite";
 import { ID } from "appwrite";
 
 const AuthContext = createContext({});
@@ -14,15 +14,26 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
     try {
       const currentUser = await account.get();
       setUser(currentUser);
+
+      // Get full user profile from database
+      try {
+        const fullProfile = await getUserById(currentUser.$id);
+        setUserProfile(fullProfile);
+      } catch (profileError) {
+        console.error("Failed to load user profile:", profileError);
+        setUserProfile(null);
+      }
     } catch (error) {
       // User is not authenticated
       setUser(null);
+      setUserProfile(null);
     } finally {
       setLoading(false);
     }
@@ -39,13 +50,22 @@ export const AuthProvider = ({ children }) => {
         await account.deleteSession("current");
       } catch (sessionError) {
         // Ignore errors if no session exists
-        console.log("No existing session to delete");
       }
 
       // Now create a new session
       await account.createEmailPasswordSession(email, password);
       const currentUser = await account.get();
       setUser(currentUser);
+
+      // Get full user profile from database
+      try {
+        const fullProfile = await getUserById(currentUser.$id);
+        setUserProfile(fullProfile);
+      } catch (profileError) {
+        console.error("Failed to load user profile:", profileError);
+        setUserProfile(null);
+      }
+
       return { success: true };
     } catch (error) {
       console.error("Login failed:", error);
@@ -78,13 +98,31 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const currentUser = await account.get();
+      setUser(currentUser);
+
+      // Get updated user profile from database
+      const fullProfile = await getUserById(currentUser.$id);
+      setUserProfile(fullProfile);
+
+      return { success: true, user: currentUser, profile: fullProfile };
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const value = {
     user,
+    userProfile,
     loading,
     login,
     register,
     logout,
     checkAuth,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

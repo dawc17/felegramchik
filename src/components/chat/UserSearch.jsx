@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   account,
-  databases,
-  APPWRITE_DATABASE_ID,
-  APPWRITE_COLLECTION_ID_USERS,
+  searchUsers,
+  getAvatarUrl,
 } from "../../lib/appwrite";
-import { Query } from "appwrite";
 
 const UserSearch = ({ onSelectUser }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,23 +31,8 @@ const UserSearch = ({ onSelectUser }) => {
     }
     try {
       setError(null);
-      const response = await databases.listDocuments(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_ID_USERS,
-        [Query.search("name", searchQuery)]
-      );
-
-      // Filter out the current user from search results
-      const filteredResults = response.documents.filter((user) => {
-        // Check both possible ID fields to be safe
-        return (
-          currentUser &&
-          user.userId !== currentUser.$id &&
-          user.$id !== currentUser.$id
-        );
-      });
-
-      setSearchResults(filteredResults);
+      const results = await searchUsers(searchQuery, currentUser?.$id);
+      setSearchResults(results);
     } catch (err) {
       setError(err.message);
       console.error("Failed to search users:", err);
@@ -83,15 +66,15 @@ const UserSearch = ({ onSelectUser }) => {
               className="flex items-center p-3 cursor-pointer hover:bg-surface-variant rounded-lg transition-colors touch-manipulation"
             >
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-on-primary text-sm font-semibold mr-3 flex-shrink-0">
-                {user.name.charAt(0).toUpperCase()}
+                {user.displaynameId?.charAt(0).toUpperCase() || user.usernameId?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-on-surface truncate">
-                  {user.name}
+                  {user.displaynameId || user.usernameId}
                 </p>
-                {user.email && (
+                {user.displaynameId && user.usernameId && user.displaynameId !== user.usernameId && (
                   <p className="text-sm text-on-surface/60 truncate">
-                    {user.email}
+                    @{user.usernameId}
                   </p>
                 )}
               </div>
