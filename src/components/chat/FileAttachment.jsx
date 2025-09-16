@@ -1,19 +1,67 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   getAttachmentUrl,
   getAttachmentDownloadUrl,
   getAttachmentPreview,
+  getAttachmentInfo,
   formatFileSize,
   getFileType,
 } from "../../lib/appwrite";
 
 const FileAttachment = ({ attachment, onLoad = null }) => {
+  const [fileInfo, setFileInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFileInfo = async () => {
+      if (attachment && attachment.fileId) {
+        try {
+          const info = await getAttachmentInfo(attachment.fileId);
+          setFileInfo(info);
+        } catch (error) {
+          console.error("Failed to get file info:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    fetchFileInfo();
+  }, [attachment]);
+
   if (!attachment || !attachment.fileId) return null;
 
-  const fileType = getFileType(attachment.mimeType);
-  const fileName = attachment.fileName || "Unknown file";
-  const fileSize = attachment.fileSize
-    ? formatFileSize(attachment.fileSize)
+  if (loading) {
+    return (
+      <div className="my-2">
+        <div className="max-w-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded animate-pulse"></div>
+            <div className="flex-1">
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded animate-pulse mb-1"></div>
+              <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded animate-pulse w-16"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!fileInfo) {
+    return (
+      <div className="my-2">
+        <div className="max-w-xs bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+          <p className="text-sm text-red-600 dark:text-red-400">
+            Failed to load file
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const fileType = getFileType(fileInfo.mimeType);
+  const fileName = fileInfo.name || "Unknown file";
+  const fileSize = fileInfo.sizeOriginal
+    ? formatFileSize(fileInfo.sizeOriginal)
     : "";
 
   const handleDownload = () => {
@@ -75,7 +123,7 @@ const FileAttachment = ({ attachment, onLoad = null }) => {
             >
               <source
                 src={getAttachmentUrl(attachment.fileId)}
-                type={attachment.mimeType}
+                type={fileInfo.mimeType}
               />
               Your browser does not support the video tag.
             </video>
@@ -108,7 +156,7 @@ const FileAttachment = ({ attachment, onLoad = null }) => {
               >
                 <source
                   src={getAttachmentUrl(attachment.fileId)}
-                  type={attachment.mimeType}
+                  type={fileInfo.mimeType}
                 />
                 Your browser does not support the audio tag.
               </audio>
