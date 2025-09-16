@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { account, databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_USERS } from '../lib/appwrite';
-import { ID } from 'appwrite';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  databases,
+  APPWRITE_DATABASE_ID,
+  APPWRITE_COLLECTION_ID_USERS,
+} from "../lib/appwrite";
+import { ID } from "appwrite";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { register } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -21,22 +28,30 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
-      const user = await account.create(ID.unique(), email, password, name);
-      await databases.createDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_ID_USERS,
-        user.$id,
-        {
-          userId: user.$id,
-          name: name,
-        }
-      );
-      await account.createEmailPasswordSession(email, password);
-      navigate('/chat');
+      const result = await register(email, password, name);
+      if (result.success) {
+        // Create user document in database
+        await databases.createDocument(
+          APPWRITE_DATABASE_ID,
+          APPWRITE_COLLECTION_ID_USERS,
+          result.user.$id,
+          {
+            userId: result.user.$id,
+            name: name,
+          }
+        );
+        navigate("/chat");
+      } else {
+        setError(result.error);
+      }
     } catch (err) {
       setError(err.message);
-      console.error('Failed to register:', err);
+      console.error("Failed to register:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,14 +126,15 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              className="w-full px-4 py-2 text-sm font-medium text-black bg-primary border border-transparent rounded-md shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              disabled={isLoading}
+              className="w-full px-4 py-2 text-sm font-medium text-black bg-primary border border-transparent rounded-md shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Register
+              {isLoading ? "Creating account..." : "Register"}
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link
             to="/login"
             className="font-medium text-primary hover:text-accent"

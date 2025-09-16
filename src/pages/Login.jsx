@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { account } from '../lib/appwrite';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const location = useLocation();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const from = location.state?.from?.pathname || "/chat";
 
   useEffect(() => {
     if (error) {
@@ -19,21 +24,20 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
-      // First, try to delete any existing sessions
-      try {
-        await account.deleteSession('current');
-      } catch (sessionError) {
-        // Ignore errors if no session exists
-        console.log('No existing session to delete');
+      const result = await login(email, password);
+      if (result.success) {
+        navigate(from, { replace: true });
+      } else {
+        setError(result.error);
       }
-      
-      // Now create a new session
-      await account.createEmailPasswordSession(email, password);
-      navigate('/chat');
     } catch (err) {
       setError(err.message);
-      console.error('Failed to login:', err);
+      console.error("Failed to login:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,14 +94,15 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full px-4 py-2 text-sm font-medium text-black bg-primary border border-transparent rounded-md shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              disabled={isLoading}
+              className="w-full px-4 py-2 text-sm font-medium text-black bg-primary border border-transparent rounded-md shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <Link
             to="/register"
             className="font-medium text-primary hover:text-accent"
