@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import {
   client,
   databases,
@@ -11,15 +11,33 @@ import {
 import { Query } from "appwrite";
 import FileAttachment from "./FileAttachment";
 
-const ChatView = ({ chatId }) => {
+const ChatView = forwardRef(({ chatId, groupId }, ref) => {
   const [messages, setMessages] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [messageUsers, setMessageUsers] = useState({});
   const messagesEndRef = useRef(null);
+  const messageRefs = useRef({});
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const scrollToMessage = (messageId) => {
+    const messageElement = messageRefs.current[messageId];
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Highlight the message briefly
+      messageElement.style.backgroundColor = "rgba(var(--primary-rgb), 0.2)";
+      setTimeout(() => {
+        messageElement.style.backgroundColor = "";
+      }, 2000);
+    }
+  };
+
+  // Expose scrollToMessage function to parent
+  useImperativeHandle(ref, () => ({
+    scrollToMessage
+  }), []);
 
   useEffect(() => {
     scrollToBottom();
@@ -38,7 +56,7 @@ const ChatView = ({ chatId }) => {
   }, []);
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId && !groupId) return;
 
     // Очистить данные при смене чата
     setMessages([]);
@@ -46,10 +64,21 @@ const ChatView = ({ chatId }) => {
 
     const getMessages = async () => {
       try {
+        let query = [];
+
+        if (chatId) {
+          query.push(Query.equal("chatId", chatId));
+        } else if (groupId) {
+          // Временно используем chatId для групп с префиксом
+          query.push(Query.equal("chatId", `group_${groupId}`));
+        }
+
+        query.push(Query.orderAsc("$createdAt"));
+
         const response = await databases.listDocuments(
           APPWRITE_DATABASE_ID,
           APPWRITE_COLLECTION_ID_MESSAGES,
-          [Query.equal("chatId", chatId), Query.orderAsc("$createdAt")]
+          query
         );
         setMessages(response.documents);
 
@@ -77,6 +106,11 @@ const ChatView = ({ chatId }) => {
     };
 
     getMessages();
+  }, [chatId, groupId]);
+
+  // Подписка на real-time обновления сообщений
+  useEffect(() => {
+    if (!chatId && !groupId) return;
 
     const unsubscribe = client.subscribe(
       `databases.${APPWRITE_DATABASE_ID}.collections.${APPWRITE_COLLECTION_ID_MESSAGES}.documents`,
@@ -86,7 +120,11 @@ const ChatView = ({ chatId }) => {
             "databases.*.collections.*.documents.*.create"
           )
         ) {
-          if (response.payload.chatId === chatId) {
+          // Проверяем, что сообщение относится к нашему чату или группе
+          const isRelevant = (chatId && response.payload.chatId === chatId) ||
+            (groupId && response.payload.chatId === `group_${groupId}`);
+
+          if (isRelevant) {
             setMessages((prevMessages) => [...prevMessages, response.payload]);
 
             // Load user info for new message
@@ -121,7 +159,7 @@ const ChatView = ({ chatId }) => {
     return () => {
       unsubscribe();
     };
-  }, [chatId]);
+  }, [chatId, groupId]);
 
   const formatTime = (dateString) => {
     return new Date(dateString).toLocaleTimeString("en-US", {
@@ -129,20 +167,20 @@ const ChatView = ({ chatId }) => {
       minute: "2-digit",
     });
   };
-  if (!chatId) {
+  if (!chatId && !groupId) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-surface">
-        <p className="text-on-surface/60">Select a chat to view messages</p>
+      <div className="flex-1 flex items-center justify-center bg-white">
+        <p className="text-gray-500">Выберите чат или группу для просмотра сообщений</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-surface overflow-hidden">
+    <div className="flex-1 flex flex-col bg-white overflow-hidden">
       <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-on-surface/60 text-center px-4">
+            <p className="text-gray-500 text-center px-4">
               No messages yet. Start the conversation!
             </p>
           </div>
@@ -154,14 +192,15 @@ const ChatView = ({ chatId }) => {
             return (
               <div
                 key={message.$id}
-                className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-3 sm:mb-4`}
+                ref={(el) => (messageRefs.current[message.$id] = el)}
+                className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-3 sm:mb-4 transition-colors duration-500`}
               >
                 {!isOwn && (
                   <div className="flex-shrink-0 mr-2 sm:mr-3">
                     {sender && sender.avatarId ? (
                       <img
                         src={getAvatarUrl(sender.avatarId)}
-                        alt={sender.name}
+                        alt={sender.displaynameId || sender.usernameId || "User"}
                         className="w-8 h-8 rounded-full object-cover"
                         onError={(e) => {
                           // Fallback to initial if image fails to load
@@ -171,29 +210,25 @@ const ChatView = ({ chatId }) => {
                       />
                     ) : null}
                     <div
-                      className={`w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-on-secondary text-xs font-semibold ${
-                        sender && sender.avatarId ? "hidden" : ""
-                      }`}
+                      className={`w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold ${sender && sender.avatarId ? "hidden" : ""
+                        }`}
                     >
-                      {sender ? sender.name.charAt(0).toUpperCase() : "?"}
+                      {sender ? (sender.displaynameId?.charAt(0) || sender.usernameId?.charAt(0) || "U").toUpperCase() : "?"}
                     </div>
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[75%] sm:max-w-xs lg:max-w-md px-3 py-2 sm:px-4 sm:py-3 rounded-lg ${
-                    isOwn
-                      ? "bg-primary text-on-primary"
-                      : "bg-surface-variant text-on-surface"
-                  }`}
+                  className={`max-w-[75%] sm:max-w-xs lg:max-w-md px-3 py-2 sm:px-4 sm:py-3 rounded-lg ${isOwn
+                    ? "bg-purple-500 text-white"
+                    : "bg-gray-100 text-gray-900"
+                    }`}
                 >
                   {!isOwn && (
-                    <p className="text-xs font-medium mb-1 text-primary">
-                      {sender ? sender.name : "Loading..."}
+                    <p className="text-xs font-medium mb-1 text-purple-600">
+                      {sender ? (sender.displaynameId || sender.usernameId) : "Loading..."}
                     </p>
-                  )}
-
-                  {/* Display attachments if they exist */}
+                  )}                  {/* Display attachments if they exist */}
                   {message.attachments && message.attachments.length > 0 && (
                     <div className="mb-2">
                       {message.attachments.map((fileId, index) => (
@@ -210,9 +245,8 @@ const ChatView = ({ chatId }) => {
                   )}
 
                   <p
-                    className={`text-xs mt-1 ${
-                      isOwn ? "text-on-primary/70" : "text-on-surface/60"
-                    }`}
+                    className={`text-xs mt-1 ${isOwn ? "text-white/70" : "text-gray-500"
+                      }`}
                   >
                     {formatTime(message.$createdAt)}
                   </p>
@@ -225,6 +259,8 @@ const ChatView = ({ chatId }) => {
       </div>
     </div>
   );
-};
+});
+
+ChatView.displayName = 'ChatView';
 
 export default ChatView;

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   account,
   databases,
@@ -8,7 +8,7 @@ import {
 } from "../../lib/appwrite";
 import { ID, Permission, Role } from "appwrite";
 
-const MessageInput = ({ chatId, participants }) => {
+const MessageInput = ({ chatId, groupId, participants }) => {
   const [message, setMessage] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,6 @@ const MessageInput = ({ chatId, participants }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const fileInputRef = useRef(null);
 
-  // File upload constraints
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
   const ALLOWED_FILE_TYPES = [
     "image/jpeg",
@@ -59,12 +58,18 @@ const MessageInput = ({ chatId, participants }) => {
     return true;
   };
 
-  const handleFileSelect = (event) => {
-    const files = Array.from(event.target.files);
+  const triggerFileSelect = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
     const validFiles = [];
     const errors = [];
-
-    if (files.length === 0) return;
 
     files.forEach((file) => {
       try {
@@ -118,11 +123,13 @@ const MessageInput = ({ chatId, participants }) => {
         let errorMessage = `Failed to upload ${file.name}`;
         if (error.message?.includes("permission")) {
           errorMessage +=
-            " - Permission denied. Please check bucket permissions.";
-        } else if (error.message?.includes("size")) {
-          errorMessage += " - File too large.";
+            ": Permission denied. Please check your authentication.";
         } else if (error.message?.includes("network")) {
-          errorMessage += " - Network error. Please check your connection.";
+          errorMessage += ": Network error. Please check your connection.";
+        } else if (error.message?.includes("size")) {
+          errorMessage += ": File too large.";
+        } else {
+          errorMessage += `: ${error.message}`;
         }
         throw new Error(errorMessage);
       }
@@ -138,7 +145,7 @@ const MessageInput = ({ chatId, participants }) => {
     const hasFiles = selectedFiles.length > 0;
 
     if (!hasMessage && !hasFiles) return;
-    if (!chatId || !currentUser) return;
+    if ((!chatId && !groupId) || !currentUser) return;
     if (isLoading || isUploading) return;
 
     setIsLoading(true);
@@ -154,9 +161,16 @@ const MessageInput = ({ chatId, participants }) => {
 
       // Create message data
       const messageData = {
-        chatId: chatId,
         senderId: currentUser.$id,
       };
+
+      // Add chat or group ID
+      if (chatId) {
+        messageData.chatId = chatId;
+      } else if (groupId) {
+        // Временно используем chatId для групп с префиксом
+        messageData.chatId = `group_${groupId}`;
+      }
 
       // Add text if provided
       if (hasMessage) {
@@ -173,15 +187,26 @@ const MessageInput = ({ chatId, participants }) => {
         APPWRITE_COLLECTION_ID_MESSAGES,
         ID.unique(),
         messageData,
-        [Permission.read(Role.users()), Permission.write(Role.users())]
+        [
+          Permission.read(Role.users()),
+          Permission.write(Role.user(currentUser.$id)),
+        ]
       );
 
-      // Clear form
+      // Clear form after successful send
       setMessage("");
       setSelectedFiles([]);
     } catch (error) {
-      console.error("Failed to send message:", error);
-      alert("Failed to send message. Please try again.");
+      console.error("Error sending message:", error);
+      let errorMessage = "Failed to send message.";
+      if (error.message?.includes("permission")) {
+        errorMessage = "Permission denied. Please check your authentication.";
+      } else if (error.message?.includes("network")) {
+        errorMessage = "Network error. Please check your connection.";
+      } else if (error.message?.includes("upload")) {
+        errorMessage = error.message;
+      }
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
       setIsUploading(false);
@@ -195,43 +220,31 @@ const MessageInput = ({ chatId, participants }) => {
     }
   };
 
-  const triggerFileSelect = () => {
-    fileInputRef.current?.click();
-  };
-
   return (
-    <div className="p-3 sm:p-4 bg-surface border-t border-border">
-      {/* File preview area */}
+    <div className="p-4 bg-white border-t border-gray-200">
       {selectedFiles.length > 0 && (
-        <div className="mb-3 p-3 bg-surface-variant rounded-lg">
+        <div className="mb-3">
           <div className="flex flex-wrap gap-2">
             {selectedFiles.map((file, index) => (
               <div
                 key={index}
-                className="relative bg-background p-2 rounded border border-border"
+                className="flex items-center bg-surface-variant rounded-lg px-3 py-2 text-sm"
               >
-                <div className="flex items-center space-x-2 max-w-48">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-on-surface/60">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="p-1 hover:bg-surface rounded"
-                    disabled={isUploading}
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                    </svg>
-                  </button>
-                </div>
+                <span className="mr-2 text-on-surface/70">
+                  {file.type.startsWith("image/") ? "🖼️" :
+                    file.type.startsWith("video/") ? "🎥" :
+                      file.type.startsWith("audio/") ? "🎵" : "📄"}
+                </span>
+                <span className="text-on-surface truncate max-w-32">
+                  {file.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(index)}
+                  className="ml-2 text-on-surface/50 hover:text-on-surface"
+                >
+                  ✕
+                </button>
               </div>
             ))}
           </div>
@@ -257,7 +270,7 @@ const MessageInput = ({ chatId, participants }) => {
         <button
           type="button"
           onClick={triggerFileSelect}
-          disabled={!chatId || isUploading}
+          disabled={(!chatId && !groupId) || isUploading}
           className="p-3 text-on-surface hover:bg-surface-variant rounded-full focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           title="Attach file"
         >
@@ -274,7 +287,7 @@ const MessageInput = ({ chatId, participants }) => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          disabled={!chatId || isUploading}
+          disabled={(!chatId && !groupId) || isUploading}
         />
 
         {/* Send button */}
@@ -282,7 +295,7 @@ const MessageInput = ({ chatId, participants }) => {
           type="submit"
           disabled={
             (!message.trim() && selectedFiles.length === 0) ||
-            !chatId ||
+            (!chatId && !groupId) ||
             isLoading ||
             isUploading
           }
