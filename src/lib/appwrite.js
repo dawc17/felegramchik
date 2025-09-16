@@ -18,6 +18,7 @@ export const APPWRITE_COLLECTION_ID_MESSAGES = import.meta.env.VITE_APPWRITE_COL
 export const APPWRITE_COLLECTION_ID_USERS = import.meta.env.VITE_APPWRITE_COLLECTION_ID_USERS;
 export const APPWRITE_COLLECTION_ID_CHATS = import.meta.env.VITE_APPWRITE_COLLECTION_ID_CHATS;
 export const APPWRITE_BUCKET_ID_AVATARS = import.meta.env.VITE_APPWRITE_BUCKET_ID_AVATARS;
+export const APPWRITE_BUCKET_ID_ATTACHMENTS = import.meta.env.VITE_APPWRITE_BUCKET_ID_ATTACHMENTS;
 
 const client = new Client()
     .setEndpoint(ENDPOINT)
@@ -169,6 +170,86 @@ export const updateUserProfile = async (userId, data) => {
         console.error('Failed to update user profile:', error);
         throw error;
     }
+};
+
+// File attachment functions
+export const uploadAttachment = async (file, onProgress = null) => {
+    try {
+        const result = await storage.createFile(
+            APPWRITE_BUCKET_ID_ATTACHMENTS,
+            ID.unique(),
+            file
+        );
+        return result;
+    } catch (error) {
+        console.error('Failed to upload attachment:', error);
+        throw error;
+    }
+};
+
+export const getAttachmentUrl = (fileId) => {
+    if (!fileId) return null;
+    return storage.getFileView(APPWRITE_BUCKET_ID_ATTACHMENTS, fileId);
+};
+
+export const getAttachmentDownloadUrl = (fileId) => {
+    if (!fileId) return null;
+    return storage.getFileDownload(APPWRITE_BUCKET_ID_ATTACHMENTS, fileId);
+};
+
+export const getAttachmentPreview = (fileId, width = 400, height = 400) => {
+    if (!fileId) return null;
+    try {
+        return storage.getFilePreview(APPWRITE_BUCKET_ID_ATTACHMENTS, fileId, width, height);
+    } catch (error) {
+        console.error('Failed to get attachment preview:', error);
+        return null;
+    }
+};
+
+export const deleteAttachment = async (fileId) => {
+    try {
+        await storage.deleteFile(APPWRITE_BUCKET_ID_ATTACHMENTS, fileId);
+        return true;
+    } catch (error) {
+        console.error('Failed to delete attachment:', error);
+        throw error;
+    }
+};
+
+export const getAttachmentInfo = async (fileId) => {
+    try {
+        const result = await storage.getFile(APPWRITE_BUCKET_ID_ATTACHMENTS, fileId);
+        return result;
+    } catch (error) {
+        console.error('Failed to get attachment info:', error);
+        throw error;
+    }
+};
+
+// Utility functions for file handling
+export const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+export const getFileType = (mimeType) => {
+    if (!mimeType) return 'unknown';
+    
+    if (mimeType.startsWith('image/')) return 'image';
+    if (mimeType.startsWith('video/')) return 'video';
+    if (mimeType.startsWith('audio/')) return 'audio';
+    if (mimeType.includes('pdf')) return 'pdf';
+    if (mimeType.includes('document') || mimeType.includes('word')) return 'document';
+    if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return 'spreadsheet';
+    if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'presentation';
+    if (mimeType.includes('text/')) return 'text';
+    if (mimeType.includes('zip') || mimeType.includes('compressed')) return 'archive';
+    
+    return 'file';
 };
 
 export { client, account, databases, storage };
