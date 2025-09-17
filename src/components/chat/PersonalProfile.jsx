@@ -160,13 +160,13 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">My Profile</h2>
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Profile</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors"
+                        className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         disabled={isLoading}
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,7 +227,7 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
 
                         {/* Name Edit */}
                         <div className="w-full mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Display Name
                             </label>
                             <div className="flex space-x-2">
@@ -235,7 +235,7 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     placeholder="Enter your name"
                                     disabled={isLoading}
                                 />
@@ -251,30 +251,30 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
 
                         {/* Username Edit */}
                         <div className="w-full mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Username
                             </label>
                             <div className="flex space-x-2">
                                 <div className="flex-1">
                                     <div className="relative">
-                                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">@</span>
+                                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">@</span>
                                         <input
                                             type="text"
                                             value={username}
                                             onChange={handleUsernameChange}
-                                            className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${!usernameStatus.available ? 'border-red-300 bg-red-50' :
-                                                    usernameStatus.message === "Current username" ? 'border-gray-300' :
-                                                        usernameStatus.available && usernameStatus.message ? 'border-green-300 bg-green-50' : 'border-gray-300'
+                                            className={`w-full pl-8 pr-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${!usernameStatus.available ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' :
+                                                    usernameStatus.message === "Current username" ? 'border-gray-300 dark:border-gray-600' :
+                                                        usernameStatus.available && usernameStatus.message ? 'border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20' : 'border-gray-300 dark:border-gray-600'
                                                 }`}
                                             placeholder="Enter username"
                                             disabled={isLoading}
                                         />
                                     </div>
                                     {(usernameStatus.message || isCheckingUsername) && (
-                                        <p className={`text-xs mt-1 ${isCheckingUsername ? 'text-gray-500' :
-                                                !usernameStatus.available ? 'text-red-600' :
-                                                    usernameStatus.message === "Current username" ? 'text-gray-500' :
-                                                        'text-green-600'
+                                        <p className={`text-xs mt-1 ${isCheckingUsername ? 'text-gray-500 dark:text-gray-400' :
+                                                !usernameStatus.available ? 'text-red-600 dark:text-red-400' :
+                                                    usernameStatus.message === "Current username" ? 'text-gray-500 dark:text-gray-400' :
+                                                        'text-green-600 dark:text-green-400'
                                             }`}>
                                             {isCheckingUsername ? 'Checking...' : usernameStatus.message}
                                         </p>
@@ -293,24 +293,24 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
 
                     {/* User Details */}
                     <div className="space-y-4">
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <h3 className="font-medium text-gray-900 mb-3">Account Information</h3>
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 className="font-medium text-gray-900 dark:text-white mb-3">Account Information</h3>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">Username:</span>
-                                    <span className="text-sm font-mono text-gray-900 bg-gray-200 px-2 py-1 rounded">
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">Username:</span>
+                                    <span className="text-sm font-mono text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
                                         @{user.usernameId || 'Not set'}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">Email:</span>
-                                    <span className="text-sm text-gray-900">
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">Email:</span>
+                                    <span className="text-sm text-gray-900 dark:text-white">
                                         {user.email}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">Joined:</span>
-                                    <span className="text-sm text-gray-900">
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">Joined:</span>
+                                    <span className="text-sm text-gray-900 dark:text-white">
                                         {formatDate(user.$createdAt)}
                                     </span>
                                 </div>
@@ -320,7 +320,7 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
                 </div>
 
                 {/* Footer with Logout button */}
-                <div className="p-4 border-t border-gray-200 bg-gray-50">
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                     <button
                         onClick={handleLogout}
                         className="w-full px-4 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center space-x-2"

@@ -169,18 +169,18 @@ const ChatView = forwardRef(({ chatId, groupId }, ref) => {
   };
   if (!chatId && !groupId) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-white">
-        <p className="text-gray-500">Выберите чат или группу для просмотра сообщений</p>
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-800">
+        <p className="text-gray-500 dark:text-gray-400">Выберите чат или группу для просмотра сообщений</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white overflow-hidden">
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
+    <div className="flex-1 flex flex-col bg-white dark:bg-gray-800 overflow-hidden">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 scrollbar scrollbar-thumb-slate-400 scrollbar-track-slate-100 dark:scrollbar-thumb-slate-700 dark:scrollbar-track-gray-800">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500 text-center px-4">
+            <p className="text-gray-500 dark:text-gray-400 text-center px-4">
               No messages yet. Start the conversation!
             </p>
           </div>
@@ -221,11 +221,11 @@ const ChatView = forwardRef(({ chatId, groupId }, ref) => {
                 <div
                   className={`max-w-[75%] sm:max-w-xs lg:max-w-md px-3 py-2 sm:px-4 sm:py-3 rounded-lg ${isOwn
                     ? "bg-purple-500 text-white"
-                    : "bg-gray-100 text-gray-900"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                     }`}
                 >
                   {!isOwn && (
-                    <p className="text-xs font-medium mb-1 text-purple-600">
+                    <p className="text-xs font-medium mb-1 text-purple-600 dark:text-purple-400">
                       {sender ? (sender.displaynameId || sender.usernameId) : "Loading..."}
                     </p>
                   )}                  {/* Display attachments if they exist */}
@@ -245,7 +245,7 @@ const ChatView = forwardRef(({ chatId, groupId }, ref) => {
                   )}
 
                   <p
-                    className={`text-xs mt-1 ${isOwn ? "text-white/70" : "text-gray-500"
+                    className={`text-xs mt-1 ${isOwn ? "text-white/70" : "text-gray-500 dark:text-gray-400"
                       }`}
                   >
                     {formatTime(message.$createdAt)}

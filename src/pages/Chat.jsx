@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
 import {
   databases,
   deleteChat,
@@ -21,6 +22,7 @@ import { Query, ID, Permission, Role } from "appwrite";
 const Chat = () => {
   const navigate = useNavigate();
   const { user: currentUser, userProfile, logout, refreshUser } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [activeChat, setActiveChat] = useState(null);
   const [refreshChatList, setRefreshChatList] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -217,7 +219,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <header className="flex items-center justify-between p-4 bg-purple-600 text-white shadow-sm h-16">
         <div className="flex items-center">
@@ -236,6 +238,25 @@ const Chat = () => {
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 hover:bg-purple-700 rounded-lg transition-colors"
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {isDarkMode ? (
+              // Sun icon for light mode
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+              </svg>
+            ) : (
+              // Moon icon for dark mode
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" />
+              </svg>
+            )}
+          </button>
+
           <button
             onClick={handleOpenPersonalProfile}
             className="relative p-1 hover:bg-purple-700 rounded-full transition-colors"
@@ -254,7 +275,7 @@ const Chat = () => {
                   }}
                 />
                 <div
-                  className="w-8 h-8 bg-purple-300 rounded-full flex items-center justify-center border-2 border-purple-300 hidden"
+                  className="w-8 h-8 bg-purple-300 rounded-full hidden items-center justify-center border-2 border-purple-300"
                 >
                   <span className="text-purple-800 font-semibold text-sm">
                     {userProfile?.name?.charAt(0)?.toUpperCase() || currentUser?.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -283,7 +304,7 @@ const Chat = () => {
         {/* Chat List - Desktop: always visible, Mobile: slide-in menu */}
         <div
           className={`
-          md:block md:w-80 lg:w-96 bg-white border-r border-gray-200 h-full
+          md:block md:w-80 lg:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-full
           ${isMobileMenuOpen
               ? "fixed top-16 left-0 right-0 bottom-0 z-50 w-full"
               : "hidden md:block md:relative"
@@ -333,23 +354,23 @@ const Chat = () => {
               />
             </>
           ) : (
-            <div className="flex items-center justify-center h-full bg-white p-6">
+            <div className="flex items-center justify-center h-full bg-white dark:bg-gray-800 p-6">
               <div className="text-center max-w-sm">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
                     width="32"
                     height="32"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="text-purple-600"
+                    className="text-purple-600 dark:text-purple-400"
                   >
                     <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
                   </svg>
                 </div>
-                <p className="text-gray-600 text-lg mb-2">
+                <p className="text-gray-600 dark:text-gray-300 text-lg mb-2">
                   Select a chat to start messaging
                 </p>
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 dark:text-gray-500 text-sm">
                   Click <span className="md:hidden">the menu button</span>
                   <span className="hidden md:inline">+</span> to find a user
                 </p>

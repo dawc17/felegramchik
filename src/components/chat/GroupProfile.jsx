@@ -238,13 +238,13 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b">
-                    <h2 className="text-lg font-semibold text-gray-900">Group Info</h2>
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Group Info</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                         disabled={isLoading}
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +254,7 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                 </div>
 
                 {/* Group Info */}
-                <div className="p-6 space-y-6">
+                <div className="p-6 space-y-6 flex-1 overflow-y-auto scrollbar scrollbar-thumb-slate-400 scrollbar-track-slate-100 dark:scrollbar-thumb-slate-700 dark:scrollbar-track-gray-800">
                     {/* Avatar and Basic Info */}
                     <div className="flex flex-col items-center space-y-4">
                         <div className="relative">
@@ -312,14 +312,14 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                                     type="text"
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                                     placeholder="Group name"
                                     disabled={isLoading}
                                 />
                                 <textarea
                                     value={editDescription}
                                     onChange={(e) => setEditDescription(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 resize-none placeholder-gray-400 dark:placeholder-gray-500"
                                     placeholder="Group description"
                                     rows={3}
                                     disabled={isLoading}
@@ -334,7 +334,7 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                                     </button>
                                     <button
                                         onClick={() => setIsEditing(false)}
-                                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                                        className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                         disabled={isLoading}
                                     >
                                         Cancel
@@ -343,15 +343,15 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                             </div>
                         ) : (
                             <div className="text-center space-y-2">
-                                <h3 className="text-xl font-semibold text-gray-900">{groupData.name}</h3>
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{groupData.name}</h3>
                                 {groupData.description && (
-                                    <p className="text-gray-600 text-sm">{groupData.description}</p>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">{groupData.description}</p>
                                 )}
-                                <p className="text-gray-500 text-sm">{participants.length} members</p>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm">{participants.length} members</p>
                                 {isCreator && (
                                     <button
                                         onClick={() => setIsEditing(true)}
-                                        className="text-green-600 hover:text-green-700 text-sm"
+                                        className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 text-sm"
                                     >
                                         Edit Group Info
                                     </button>
@@ -363,10 +363,10 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                     {/* Members Section */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-gray-900">Members ({participants.length})</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-white">Members ({participants.length})</h4>
                             <button
                                 onClick={() => setShowAddMember(!showAddMember)}
-                                className="text-green-600 hover:text-green-700 text-sm"
+                                className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 text-sm"
                             >
                                 Add Member
                             </button>
@@ -374,7 +374,7 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
 
                         {/* Add Member Section */}
                         {showAddMember && (
-                            <div className="border rounded-lg p-3 space-y-3">
+                            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-3">
                                 <input
                                     type="text"
                                     value={searchQuery}
@@ -382,7 +382,7 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                                         setSearchQuery(e.target.value);
                                         handleSearchUsers(e.target.value);
                                     }}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400 dark:placeholder-gray-500"
                                     placeholder="Search users to add..."
                                 />
                                 {searchResults.length > 0 && (
@@ -390,17 +390,17 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                                         {searchResults.map(user => (
                                             <div
                                                 key={user.$id}
-                                                className="flex items-center justify-between p-2 hover:bg-gray-50 rounded"
+                                                className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded"
                                             >
                                                 <div className="flex items-center space-x-2">
                                                     <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
                                                         {(user.displaynameId?.charAt(0) || user.usernameId?.charAt(0) || 'U').toUpperCase()}
                                                     </div>
-                                                    <span className="text-sm">{user.displaynameId || user.usernameId}</span>
+                                                    <span className="text-sm text-gray-900 dark:text-white">{user.displaynameId || user.usernameId}</span>
                                                 </div>
                                                 <button
                                                     onClick={() => handleAddMember(user)}
-                                                    className="text-green-600 hover:text-green-700 text-sm"
+                                                    className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 text-sm"
                                                     disabled={isLoading}
                                                 >
                                                     Add
@@ -415,7 +415,7 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                         {/* Members List */}
                         <div className="space-y-2">
                             {participants.map(participant => (
-                                <div key={participant.$id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                                <div key={participant.$id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
                                     <div className="flex items-center space-x-3">
                                         {participant.avatarId ? (
                                             <img
@@ -429,21 +429,21 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                                             </div>
                                         )}
                                         <div>
-                                            <p className="font-medium text-gray-900">
+                                            <p className="font-medium text-gray-900 dark:text-white">
                                                 {participant.displaynameId || participant.usernameId}
                                             </p>
                                             {participant.usernameId && (
-                                                <p className="text-sm text-gray-500">@{participant.usernameId}</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">@{participant.usernameId}</p>
                                             )}
                                             {participant.$id === group.createdBy && (
-                                                <p className="text-xs text-green-600">Group Creator</p>
+                                                <p className="text-xs text-green-600 dark:text-green-400">Group Creator</p>
                                             )}
                                         </div>
                                     </div>
                                     {isCreator && participant.$id !== currentUser.$id && (
                                         <button
                                             onClick={() => handleRemoveMember(participant)}
-                                            className="text-red-600 hover:text-red-700 text-sm"
+                                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm"
                                             disabled={isLoading}
                                         >
                                             Remove
@@ -455,16 +455,16 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
                     </div>
 
                     {/* Group Info */}
-                    <div className="bg-gray-50 rounded-lg p-4">
-                        <h4 className="font-medium text-gray-900 mb-3">Group Details</h4>
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-3">Group Details</h4>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Created:</span>
-                                <span className="text-gray-900">{formatDate(group.$createdAt)}</span>
+                                <span className="text-gray-600 dark:text-gray-400">Created:</span>
+                                <span className="text-gray-900 dark:text-white">{formatDate(group.$createdAt)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Creator:</span>
-                                <span className="text-gray-900">
+                                <span className="text-gray-600 dark:text-gray-400">Creator:</span>
+                                <span className="text-gray-900 dark:text-white">
                                     {participants.find(p => p.$id === group.createdBy)?.displaynameId ||
                                         participants.find(p => p.$id === group.createdBy)?.usernameId ||
                                         'Unknown'}

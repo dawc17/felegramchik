@@ -217,27 +217,27 @@ const MessageInput = ({ chatId, groupId, participants }) => {
   };
 
   return (
-    <div className="p-4 bg-white border-t border-gray-200">
+    <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
       {selectedFiles.length > 0 && (
         <div className="mb-3">
           <div className="flex flex-wrap gap-2">
             {selectedFiles.map((file, index) => (
               <div
                 key={index}
-                className="flex items-center bg-surface-variant rounded-lg px-3 py-2 text-sm"
+                className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm"
               >
-                <span className="mr-2 text-on-surface/70">
+                <span className="mr-2 text-gray-700 dark:text-gray-300">
                   {file.type.startsWith("image/") ? "🖼️" :
                     file.type.startsWith("video/") ? "🎥" :
                       file.type.startsWith("audio/") ? "🎵" : "📄"}
                 </span>
-                <span className="text-on-surface truncate max-w-32">
+                <span className="text-gray-900 dark:text-white truncate max-w-32">
                   {file.name}
                 </span>
                 <button
                   type="button"
                   onClick={() => removeFile(index)}
-                  className="ml-2 text-on-surface/50 hover:text-on-surface"
+                  className="ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 >
                   ✕
                 </button>
@@ -267,7 +267,7 @@ const MessageInput = ({ chatId, groupId, participants }) => {
           type="button"
           onClick={triggerFileSelect}
           disabled={(!chatId && !groupId) || isUploading}
-          className="p-3 text-on-surface hover:bg-surface-variant rounded-full focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           title="Attach file"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -279,7 +279,7 @@ const MessageInput = ({ chatId, groupId, participants }) => {
         <input
           type="text"
           placeholder="Type a message..."
-          className="flex-1 px-4 py-3 border border-border rounded-full bg-surface-variant text-on-surface placeholder-on-surface/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-base"
+          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-base"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
