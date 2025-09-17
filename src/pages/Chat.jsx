@@ -273,7 +273,7 @@ const Chat = () => {
       </header>      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed top-16 left-0 right-0 bottom-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed top-16 left-0 right-0 bottom-0 bg-black/50 z-40 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

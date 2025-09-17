@@ -237,7 +237,7 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
     const isCreator = group.createdBy === currentUser.$id;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b">
@@ -274,7 +274,7 @@ const GroupProfile = ({ group, isOpen, onClose, currentUser, onUpdate, onDelete 
 
                             {/* Loading overlay */}
                             {isLoading && (
-                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
                                     <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                 </div>
                             )}

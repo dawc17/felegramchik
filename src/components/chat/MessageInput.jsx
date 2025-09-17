@@ -162,6 +162,7 @@ const MessageInput = ({ chatId, groupId, participants }) => {
       // Create message data
       const messageData = {
         senderId: currentUser.$id,
+        text: hasMessage ? message.trim() : "", // Always include text field, even if empty
       };
 
       // Add chat or group ID
@@ -170,11 +171,6 @@ const MessageInput = ({ chatId, groupId, participants }) => {
       } else if (groupId) {
         // Временно используем chatId для групп с префиксом
         messageData.chatId = `group_${groupId}`;
-      }
-
-      // Add text if provided
-      if (hasMessage) {
-        messageData.text = message.trim();
       }
 
       // Add attachments if any - store as an array of file IDs
