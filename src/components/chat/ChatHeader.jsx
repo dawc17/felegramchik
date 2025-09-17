@@ -241,7 +241,7 @@ const ChatHeader = ({
 
         return parts.map((part, index) => {
             if (part.toLowerCase() === trimmedQuery.toLowerCase()) {
-                return <span key={index} className="bg-yellow-200 font-semibold rounded px-1">{part}</span>;
+                return <span key={index} className="bg-yellow-200 dark:bg-yellow-500 dark:text-black font-semibold rounded px-1">{part}</span>;
             }
             return part;
         });
@@ -257,12 +257,12 @@ const ChatHeader = ({
     // Show loading state
     if (!isGroup && !otherUser) {
         return (
-            <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-full animate-pulse"></div>
+                    <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full animate-pulse"></div>
                     <div>
-                        <div className="w-24 h-4 bg-gray-100 rounded animate-pulse"></div>
-                        <div className="w-16 h-3 bg-gray-100 rounded animate-pulse mt-1"></div>
+                        <div className="w-24 h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse"></div>
+                        <div className="w-16 h-3 bg-gray-100 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
                     </div>
                 </div>
             </div>
@@ -270,7 +270,7 @@ const ChatHeader = ({
     }
 
     return (
-        <div className="bg-white border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             {/* Main Header */}
             <div className="flex items-center justify-between p-4">
                 <div className="flex items-center space-x-3 flex-1">
@@ -330,15 +330,15 @@ const ChatHeader = ({
                     >
                         {isGroup ? (
                             <>
-                                <h3 className="font-medium text-gray-900">{chatData.name}</h3>
-                                <p className="text-sm text-gray-500">
+                                <h3 className="font-medium text-gray-900 dark:text-white">{chatData.name}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                     {chatData.participants?.length} members • click to view info
                                 </p>
                             </>
                         ) : (
                             <>
-                                <h3 className="font-medium text-gray-900">{otherUser?.displaynameId || otherUser?.usernameId}</h3>
-                                <p className="text-sm text-gray-500">
+                                <h3 className="font-medium text-gray-900 dark:text-white">{otherUser?.displaynameId || otherUser?.usernameId}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                     {otherUser?.lastSeen ? "recently online" : "click to view profile"}
                                 </p>
                             </>
@@ -353,7 +353,7 @@ const ChatHeader = ({
                         onClick={handleSearchToggle}
                         className={`p-2 rounded-full transition-colors ${isSearchOpen
                             ? "bg-purple-500 text-white"
-                            : "text-gray-500 hover:bg-gray-100"
+                            : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
                         title="Search messages"
                     >
@@ -368,7 +368,7 @@ const ChatHeader = ({
                             onClick={handleMenuToggle}
                             className={`p-2 rounded-full transition-colors ${isMenuOpen
                                 ? "bg-purple-500 text-white"
-                                : "text-gray-500 hover:bg-gray-100"
+                                : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 }`}
                             title="Menu"
                         >
@@ -379,10 +379,10 @@ const ChatHeader = ({
 
                         {/* Dropdown Menu */}
                         {isMenuOpen && (
-                            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
                                 <button
                                     onClick={handleViewProfile}
-                                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                                    className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center space-x-2"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -392,7 +392,7 @@ const ChatHeader = ({
 
                                 <button
                                     onClick={handleClearHistory}
-                                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                                    className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center space-x-2"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -402,7 +402,7 @@ const ChatHeader = ({
 
                                 <button
                                     onClick={handleDeleteChat}
-                                    className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors flex items-center space-x-2"
+                                    className="w-full px-4 py-2 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center space-x-2"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -417,7 +417,7 @@ const ChatHeader = ({
 
             {/* Search Bar */}
             {isSearchOpen && (
-                <div className="px-4 pb-4 border-t border-gray-200" ref={searchRef}>
+                <div className="px-4 pb-4 border-t border-gray-200 dark:border-gray-700" ref={searchRef}>
                     <div className="flex items-center space-x-2 mt-4">
                         <div className="flex-1 relative">
                             <input
@@ -425,7 +425,7 @@ const ChatHeader = ({
                                 value={searchQuery}
                                 onChange={(e) => handleSearch(e.target.value)}
                                 placeholder="Search messages..."
-                                className="w-full px-4 py-2 bg-gray-50 rounded-lg border border-gray-300 focus:border-purple-500 focus:outline-none text-gray-900"
+                                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 autoFocus
                             />
                             {isSearching && (
@@ -436,7 +436,7 @@ const ChatHeader = ({
                         </div>
                         <button
                             onClick={() => setIsSearchOpen(false)}
-                            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -447,20 +447,20 @@ const ChatHeader = ({
                     {/* Search Results */}
                     {searchResults.length > 0 && (
                         <div className="mt-3">
-                            <div className="text-xs text-gray-500 mb-2 px-2">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 px-2">
                                 Found {searchResults.length} message{searchResults.length !== 1 ? 's' : ''}
                             </div>
-                            <div className="max-h-60 overflow-y-auto bg-gray-50 rounded-lg">
+                            <div className="max-h-60 overflow-y-auto bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 {searchResults.map((message) => (
                                     <div
                                         key={message.$id}
                                         onClick={() => scrollToMessage(message.$id)}
-                                        className="p-3 hover:bg-white cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors"
+                                        className="p-3 hover:bg-white dark:hover:bg-gray-600 cursor-pointer border-b border-gray-200 dark:border-gray-600 last:border-b-0 transition-colors"
                                     >
-                                        <p className="text-sm text-gray-900 line-clamp-2">
+                                        <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
                                             {highlightText(message.text, searchQuery)}
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-1">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                             {new Date(message.$createdAt).toLocaleString()}
                                         </p>
                                     </div>
@@ -470,8 +470,8 @@ const ChatHeader = ({
                     )}
 
                     {searchQuery && searchResults.length === 0 && !isSearching && (
-                        <div className="mt-3 p-4 text-center text-gray-500">
-                            <svg className="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="mt-3 p-4 text-center text-gray-500 dark:text-gray-400">
+                            <svg className="w-8 h-8 mx-auto mb-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                             <p>No messages found for "{searchQuery}"</p>
@@ -480,7 +480,7 @@ const ChatHeader = ({
                     )}
 
                     {isSearching && searchQuery && (
-                        <div className="mt-3 p-4 text-center text-gray-500">
+                        <div className="mt-3 p-4 text-center text-gray-500 dark:text-gray-400">
                             <div className="inline-flex items-center space-x-2">
                                 <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                                 <span>Searching messages...</span>

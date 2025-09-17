@@ -283,10 +283,10 @@ const ChatList = ({
   }, [chats, groups, lastMessages]);
 
   return (
-    <div className="w-full h-full bg-white flex flex-col">
-      <div className="p-4 border-b border-gray-200">
+    <div className="w-full h-full bg-white dark:bg-gray-800 flex flex-col">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
             Chats
           </h2>
           <div className="flex space-x-2">
@@ -319,7 +319,7 @@ const ChatList = ({
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar scrollbar-thumb-slate-400 scrollbar-track-slate-100 dark:scrollbar-thumb-slate-700 dark:scrollbar-track-gray-800">
         {getAllConversations.map((conversation) => {
           if (conversation.type === 'chat') {
             const otherUser = chatUsers[conversation.$id];
@@ -331,7 +331,7 @@ const ChatList = ({
               <div
                 key={conversation.$id}
                 onClick={() => onSelectChat(conversation)}
-                className={`p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer ${isActive ? "bg-purple-50 border-purple-200" : ""
+                className={`p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer ${isActive ? "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-700" : ""
                   }`}
               >
                 <div className="flex items-center space-x-3">
@@ -356,12 +356,12 @@ const ChatList = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-900 truncate">
+                      <h3 className="font-medium text-gray-900 dark:text-white truncate">
                         {otherUser ? (otherUser.displaynameId || otherUser.usernameId) : "Loading..."}
                       </h3>
                       <div className="flex items-center space-x-2">
                         {lastMessage && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {formatTime(lastMessage.$createdAt)}
                           </span>
                         )}
@@ -373,7 +373,7 @@ const ChatList = ({
                       </div>
                     </div>
                     {lastMessage && (
-                      <p className="text-sm text-gray-600 truncate flex items-center">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 truncate flex items-center">
                         {lastMessage.text ? (
                           lastMessage.text
                         ) : lastMessage.attachments &&
@@ -410,7 +410,7 @@ const ChatList = ({
               <div
                 key={`group_${conversation.$id}`}
                 onClick={() => handleGroupSelect(conversation)}
-                className={`p-3 cursor-pointer hover:bg-gray-50 border-b border-gray-100 touch-manipulation ${isActive ? "bg-green-50" : ""
+                className={`p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 touch-manipulation ${isActive ? "bg-green-50 dark:bg-green-900/20" : ""
                   }`}
               >
                 <div className="flex items-center">
@@ -432,12 +432,12 @@ const ChatList = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-900 truncate">
+                      <h3 className="font-medium text-gray-900 dark:text-white truncate">
                         {conversation.name}
                       </h3>
                       <div className="flex items-center space-x-2">
                         {lastMessage && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {formatTime(lastMessage.$createdAt)}
                           </span>
                         )}
@@ -449,18 +449,18 @@ const ChatList = ({
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-600 truncate">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
                         {lastMessage ? (
                           <>
                             {lastMessageSender ? (
-                              <span className="font-medium text-gray-800">
+                              <span className="font-medium text-gray-800 dark:text-gray-200">
                                 {lastMessage.senderId === currentUser?.$id
                                   ? "Вы"
                                   : (lastMessageSender.displaynameId || lastMessageSender.usernameId)
                                 }:
                               </span>
                             ) : lastMessage.senderId === currentUser?.$id ? (
-                              <span className="font-medium text-gray-800">Вы: </span>
+                              <span className="font-medium text-gray-800 dark:text-gray-200">Вы: </span>
                             ) : null}
                             <span className={lastMessageSender || lastMessage.senderId === currentUser?.$id ? "ml-1" : ""}>
                               {lastMessage.text ? lastMessage.text : "📎 Attachment"}
@@ -471,10 +471,10 @@ const ChatList = ({
                         )}
                       </p>
                       <div className="flex items-center space-x-1">
-                        <svg className="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-3 h-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span className="text-xs text-gray-500">{conversation.participants.length}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{conversation.participants.length}</span>
                       </div>
                     </div>
                   </div>

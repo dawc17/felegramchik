@@ -28,13 +28,13 @@ const UserProfile = ({ user, isOpen, onClose, onClearHistory, onDeleteChat }) =>
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">User Profile</h2>
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">User Profile</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors"
+                        className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -43,7 +43,7 @@ const UserProfile = ({ user, isOpen, onClose, onClearHistory, onDeleteChat }) =>
                 </div>
 
                 {/* User Info */}
-                <div className="p-6">
+                <div className="p-6 flex-1 overflow-y-auto scrollbar scrollbar-thumb-slate-400 scrollbar-track-slate-100 dark:scrollbar-thumb-slate-700 dark:scrollbar-track-gray-800">
                     {/* Avatar and Name */}
                     <div className="flex flex-col items-center mb-6">
                         <div className="relative mb-4">
@@ -77,7 +77,7 @@ const UserProfile = ({ user, isOpen, onClose, onClearHistory, onDeleteChat }) =>
                         )}
 
                         {user.email && (
-                            <p className="text-gray-500 text-center mt-1">
+                            <p className="text-gray-500 dark:text-gray-400 text-center mt-1">
                                 {user.email}
                             </p>
                         )}
@@ -86,16 +86,16 @@ const UserProfile = ({ user, isOpen, onClose, onClearHistory, onDeleteChat }) =>
                     {/* User Details */}
                     <div className="space-y-4">
                         {/* Registration Date */}
-                        <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                             <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900">Registration Date</p>
-                                    <p className="text-gray-600">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white">Registration Date</p>
+                                    <p className="text-gray-600 dark:text-gray-300">
                                         {user.$createdAt ? formatDate(user.$createdAt) : "Unknown"}
                                     </p>
                                 </div>
@@ -103,10 +103,10 @@ const UserProfile = ({ user, isOpen, onClose, onClearHistory, onDeleteChat }) =>
                         </div>
 
                         {/* Username */}
-                        <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                             <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                 </div>
@@ -121,16 +121,16 @@ const UserProfile = ({ user, isOpen, onClose, onClearHistory, onDeleteChat }) =>
 
                         {/* Last Seen (if available) */}
                         {user.lastSeen && (
-                            <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                                        <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Last Seen</p>
-                                        <p className="text-gray-600">
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Last Seen</p>
+                                        <p className="text-gray-600 dark:text-gray-300">
                                             {formatDate(user.lastSeen)}
                                         </p>
                                     </div>
@@ -140,10 +140,10 @@ const UserProfile = ({ user, isOpen, onClose, onClearHistory, onDeleteChat }) =>
 
                         {/* Bio (if available) */}
                         {user.bio && (
-                            <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                                 <div className="flex items-start space-x-3">
-                                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>

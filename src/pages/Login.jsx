@@ -42,15 +42,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8 sm:px-6 lg:px-8">
       {error && (
         <div className="fixed top-4 right-4 left-4 sm:left-auto sm:right-4 sm:w-auto bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 text-sm">
           {error}
         </div>
       )}
-      <div className="w-full max-w-md space-y-6 bg-white rounded-lg shadow-lg p-6 sm:p-8">
+      <div className="w-full max-w-md space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8">
         <div className="text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-secondary">
+          <h2 className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400">
             Sign in to your account
           </h2>
         </div>
@@ -58,7 +58,7 @@ const Login = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-secondary mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Email address
             </label>
@@ -68,7 +68,7 @@ const Login = () => {
               type="email"
               autoComplete="email"
               required
-              className="w-full px-4 py-3 border border-secondary rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +77,7 @@ const Login = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-secondary mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Password
             </label>
@@ -87,7 +87,7 @@ const Login = () => {
               type="password"
               autoComplete="current-password"
               required
-              className="w-full px-4 py-3 border border-secondary rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-base"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -104,7 +104,7 @@ const Login = () => {
           </div>
         </form>
         <div className="text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Don't have an account?{" "}
             <Link
               to="/register"
