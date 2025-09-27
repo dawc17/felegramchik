@@ -54,7 +54,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
         setIsSearching(true);
         try {
             const users = await searchUsers(searchQuery);
-            // Фильтруем текущего пользователя и уже выбранных пользователей
+            // Filter out current user and already selected users
             const filteredUsers = users.filter(
                 (user) =>
                     user.$id !== currentUser?.$id &&
@@ -91,7 +91,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
 
     const handleCreateGroup = async () => {
         if (!groupName.trim() || selectedUsers.length === 0) {
-            alert("Введите название группы и выберите участников");
+            alert("Enter group name and select participants");
             return;
         }
 
@@ -99,7 +99,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
         try {
             let avatarId = null;
 
-            // Загружаем аватар если выбран
+            // Upload avatar if selected
             if (groupAvatarFile) {
                 const avatarResponse = await storage.createFile(
                     APPWRITE_BUCKET_ID_AVATARS,
@@ -109,7 +109,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                 avatarId = avatarResponse.$id;
             }
 
-            // Создаем группу
+            // Create group
             const group = await createGroup({
                 name: groupName.trim(),
                 description: groupDescription.trim(),
@@ -131,7 +131,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
             handleClose();
         } catch (error) {
             console.error("Failed to create group:", error);
-            alert("Ошибка при создании группы");
+            alert("Error creating group");
         } finally {
             setIsLoading(false);
         }
@@ -157,7 +157,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <Users className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                        Создать группу
+                        Create Group
                     </h2>
                     <button
                         onClick={handleClose}
@@ -198,13 +198,13 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                     {/* Group Name */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Название группы
+                            Group Name
                         </label>
                         <input
                             type="text"
                             value={groupName}
                             onChange={(e) => setGroupName(e.target.value)}
-                            placeholder="Введите название группы"
+                            placeholder="Enter group name"
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             maxLength={50}
                         />
@@ -213,12 +213,12 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                     {/* Group Description */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Описание (необязательно)
+                            Description (optional)
                         </label>
                         <textarea
                             value={groupDescription}
                             onChange={(e) => setGroupDescription(e.target.value)}
-                            placeholder="Введите описание группы"
+                            placeholder="Enter group description"
                             rows={3}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
                             maxLength={200}
@@ -228,7 +228,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                     {/* Add Members */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Добавить участников
+                            Add Members
                         </label>
 
                         {/* Selected Users */}
@@ -258,7 +258,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Поиск пользователей..."
+                            placeholder="Search users..."
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         />
 
@@ -276,7 +276,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                                {user.displaynameId || user.usernameId || "Без имени"}
+                                                {user.displaynameId || user.usernameId || "No name"}
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                                 {user.email || user.usernameId}
@@ -290,13 +290,13 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
 
                         {isSearching && (
                             <div className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
-                                Поиск...
+                                Searching...
                             </div>
                         )}
 
                         {searchQuery && !isSearching && searchResults.length === 0 && (
                             <div className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
-                                Пользователи не найдены
+                                No users found
                             </div>
                         )}
                     </div>
@@ -310,7 +310,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                             className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             disabled={isLoading}
                         >
-                            Отмена
+                            Cancel
                         </button>
                         <button
                             onClick={handleCreateGroup}
@@ -322,7 +322,7 @@ const CreateGroup = ({ isOpen, onClose, onGroupCreated }) => {
                             ) : (
                                 <>
                                     <Check className="w-4 h-4 mr-2" />
-                                    Создать
+                                    Create
                                 </>
                             )}
                         </button>

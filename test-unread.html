@@ -28,51 +28,51 @@
 </head>
 
 <body>
-    <h1>Тест системы непрочитанных сообщений</h1>
+    <h1>Unread Messages System Test</h1>
 
-    <h2>Что было исправлено:</h2>
+    <h2>What was fixed:</h2>
     <div class="test-result success">
-        ✅ Добавлена функция markMessagesAsRead() в appwrite.js
+        ✅ Added markMessagesAsRead() function in appwrite.js
     </div>
     <div class="test-result success">
-        ✅ Добавлена улучшенная функция getUnreadCountImproved() с localStorage
+        ✅ Added improved getUnreadCountImproved() function with localStorage
     </div>
     <div class="test-result success">
-        ✅ Обновлен ChatList.jsx для использования новых функций
+        ✅ Updated ChatList.jsx to use new functions
     </div>
     <div class="test-result success">
-        ✅ Добавлены вызовы markMessagesAsRead при открытии чатов в Chat.jsx
+        ✅ Added markMessagesAsRead calls when opening chats in Chat.jsx
     </div>
     <div class="test-result success">
-        ✅ Добавлено автоматическое обновление счетчиков при смене активного чата
+        ✅ Added automatic counter updates when switching active chat
     </div>
 
-    <h2>Как работает:</h2>
+    <h2>How it works:</h2>
     <ol>
-        <li><strong>При открытии чата/группы:</strong> Вызывается markMessagesAsRead(), которая сохраняет timestamp в
+        <li><strong>When opening chat/group:</strong> markMessagesAsRead() is called, which saves timestamp in
             localStorage</li>
-        <li><strong>Подсчет непрочитанных:</strong> getUnreadCountImproved() использует сохраненный timestamp для
-            точного подсчета</li>
-        <li><strong>Обновление UI:</strong> Счетчики обновляются автоматически при смене активного чата</li>
-        <li><strong>Визуальная обратная связь:</strong> Кружочки с числами исчезают после прочтения</li>
+        <li><strong>Unread count calculation:</strong> getUnreadCountImproved() uses saved timestamp for
+            accurate counting</li>
+        <li><strong>UI updates:</strong> Counters update automatically when switching active chat</li>
+        <li><strong>Visual feedback:</strong> Number badges disappear after reading</li>
     </ol>
 
-    <h2>Тестирование:</h2>
+    <h2>Testing:</h2>
     <ol>
-        <li>Откройте приложение в двух окнах/вкладках с разными пользователями</li>
-        <li>Отправьте сообщение от одного пользователя другому</li>
-        <li>У получателя должен появиться кружочек с "1"</li>
-        <li>При открытии чата кружочек должен исчезнуть</li>
-        <li>При отправке нового сообщения кружочек должен появиться снова</li>
+        <li>Open the app in two windows/tabs with different users</li>
+        <li>Send a message from one user to another</li>
+        <li>The recipient should see a badge with "1"</li>
+        <li>When opening the chat, the badge should disappear</li>
+        <li>When sending a new message, the badge should appear again</li>
     </ol>
 
-    <h2>Преимущества:</h2>
+    <h2>Advantages:</h2>
     <ul>
-        <li>🔄 <strong>Реальное время:</strong> Счетчики обновляются мгновенно</li>
-        <li>💾 <strong>Персистентность:</strong> Данные о прочтении сохраняются в localStorage</li>
-        <li>🎨 <strong>Красивый UI:</strong> Кружочки как в Telegram с цветовой кодировкой</li>
-        <li>⚡ <strong>Производительность:</strong> Минимальная нагрузка на сервер</li>
-        <li>📱 <strong>Адаптивность:</strong> Работает на всех устройствах</li>
+        <li>🔄 <strong>Real-time:</strong> Counters update instantly</li>
+        <li>💾 <strong>Persistence:</strong> Read data is saved in localStorage</li>
+        <li>🎨 <strong>Beautiful UI:</strong> Badges like in Telegram with color coding</li>
+        <li>⚡ <strong>Performance:</strong> Minimal server load</li>
+        <li>📱 <strong>Responsive:</strong> Works on all devices</li>
     </ul>
 </body>
 

@@ -169,7 +169,7 @@ const MessageInput = ({ chatId, groupId, participants }) => {
       if (chatId) {
         messageData.chatId = chatId;
       } else if (groupId) {
-        // Временно используем chatId для групп с префиксом
+        // Temporarily use chatId for groups with prefix
         messageData.chatId = `group_${groupId}`;
       }
 

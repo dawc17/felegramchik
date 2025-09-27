@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getAvatarUrl, uploadAvatar, deleteAvatar, updateUserProfile, checkUsernameAvailability } from "../../lib/appwrite";
 
 const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
@@ -7,6 +7,14 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
     const [username, setUsername] = useState(user?.usernameId || "");
     const [usernameStatus, setUsernameStatus] = useState({ available: true, message: "" });
     const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+
+    useEffect(() => {
+        if (isOpen && user) {
+            setName(user.displaynameId || "");
+            setUsername(user.usernameId || "");
+            setUsernameStatus({ available: true, message: "" });
+        }
+    }, [isOpen, user]);
 
     if (!isOpen || !user) return null;
 
@@ -30,11 +38,11 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
             }
 
             // Upload new avatar
-            const avatarId = await uploadAvatar(file);
+            const result = await uploadAvatar(file);
 
             // Update user profile with new avatar ID
             await updateUserProfile(user.$id, {
-                avatarId: avatarId,
+                avatarId: result.$id,
             });
 
             alert("Avatar updated successfully!");
@@ -56,7 +64,7 @@ const PersonalProfile = ({ user, isOpen, onClose, onUpdate, onLogout }) => {
 
             // Update user profile to remove avatar ID
             await updateUserProfile(user.$id, {
-                avatarId: "", // Use empty string instead of null
+                avatarId: null,
             });
 
             alert("Avatar removed successfully!");

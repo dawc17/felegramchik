@@ -1,7 +1,7 @@
 import { Client, Account, Databases, Storage } from "appwrite";
 import { Query, ID } from "appwrite";
 
-// Проверяем наличие всех необходимых переменных окружения
+// Check for all required environment variables
 const ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT;
 const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 
@@ -53,7 +53,7 @@ export const getLastMessage = async (chatId = null, groupId = null) => {
         if (chatId) {
             query.push(Query.equal('chatId', chatId));
         } else if (groupId) {
-            // Временно используем chatId для групп с префиксом
+            // Temporarily use chatId for groups with prefix
             const groupChatId = `group_${groupId}`;
             console.log('Looking for messages with chatId:', groupChatId);
             query.push(Query.equal('chatId', groupChatId));

@@ -58,7 +58,7 @@ const ChatView = forwardRef(({ chatId, groupId }, ref) => {
   useEffect(() => {
     if (!chatId && !groupId) return;
 
-    // Очистить данные при смене чата
+    // Clear data when changing chat
     setMessages([]);
     setMessageUsers({});
 
@@ -69,7 +69,7 @@ const ChatView = forwardRef(({ chatId, groupId }, ref) => {
         if (chatId) {
           query.push(Query.equal("chatId", chatId));
         } else if (groupId) {
-          // Временно используем chatId для групп с префиксом
+          // Temporarily use chatId for groups with prefix
           query.push(Query.equal("chatId", `group_${groupId}`));
         }
 
