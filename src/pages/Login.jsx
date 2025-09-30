@@ -114,6 +114,11 @@ const Login = () => {
             </Link>
           </p>
         </div>
+        <div>
+          <p className="text-sm text-red-600 dark:text-red-700">
+            Made by dawid and oleksandr !?!?!?!?
+          </p>
+        </div>
       </div>
     </div>
   );
